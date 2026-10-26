@@ -20,8 +20,7 @@ def main():
     tools = [currentTime]
     agent_executor = create_react_agent(model, tools)
 
-    print("\nHi! I'm your AI assistant.")
-    print("You can chat with me, or ask me to perform calculations.")
+    print("\nHi! I'm your AI assistant. How can I help you?")
     print("Type 'quit' to exit.")
 
     messages = []
