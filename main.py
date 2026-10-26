@@ -6,29 +6,39 @@ from dotenv import load_dotenv #loads env files
 
 load_dotenv()
 
-def main():
-    model = ChatOpenAI(temperature=0)
+@tool
+def calculator(a: float, b: float) -> str:
+    """Useful for performing basic addition arithmetic calculations with numbers"""
+    return f"The sum of {a} and {b} is {a + b}."
 
-    tools = []
+def main():
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+    tools = [calculator]
     agent_executor = create_react_agent(model, tools)
 
-    print("Hi! I'm your AI assistant.")
+    print("\nHi! I'm your AI assistant.")
     print("You can chat with me, or ask me to perform calculations.")
     print("Type 'quit' to exit.")
 
-    while True:
-        user_input = input("\n: ").strip()
+    messages = []
 
+    while True:
+        user_input = input("\nYou: ").strip()
         if user_input == "quit":
             break
 
+        messages.append(HumanMessage(content=user_input))
+
         print("\nAssistant: ", end="")
-        for chunk in agent_executor.stream(
-            {"messages": [HumanMessage(content=user_input)]}
-        ):
+        for chunk in agent_executor.stream({"messages": messages}):
             if "agent" in chunk and "messages" in chunk["agent"]:
                 for message in chunk["agent"]["messages"]:
                     print(message.content, end="")
+                    messages.append(message)
+            if "tools" in chunk and "messages" in chunk["tools"]:
+                for message in chunk["tools"]["messages"]:
+                    messages.append(message)
         print()
 
 if __name__ == "__main__":
