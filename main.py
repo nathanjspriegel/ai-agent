@@ -3,18 +3,21 @@ from langchain_openai import ChatOpenAI #allows use openai
 from langchain.tools import tool
 from langgraph.prebuilt import create_react_agent #allows building AI agents
 from dotenv import load_dotenv #loads env files
+from datetime import datetime #python date/time library
+import requests #allows uv to talk to websites/APIs
 
 load_dotenv()
 
 @tool
-def calculator(a: float, b: float) -> str:
-    """Useful for performing basic addition arithmetic calculations with numbers"""
-    return f"The sum of {a} and {b} is {a + b}."
+def currentTime() -> str:
+    """Get the current date and time. Useful when asked what time or day it is today"""
+    now = datetime.now()
+    return now.strftime("%A, %B %d, %Y at %I:%M %p")
 
 def main():
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-    tools = [calculator]
+    tools = [currentTime]
     agent_executor = create_react_agent(model, tools)
 
     print("\nHi! I'm your AI assistant.")
